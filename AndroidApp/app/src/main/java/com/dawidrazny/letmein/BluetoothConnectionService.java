@@ -33,27 +33,27 @@ public class BluetoothConnectionService
     private UUID deviceUUID;
     ProgressDialog mProgressDialog;
 
-    private ConnectedThread mConnectedThread;
+            private ConnectedThread mConnectedThread;
 
     public BluetoothConnectionService(Context context)
-    {
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        mContext = context;
-        start();
-    }
-
-    private class AcceptThread extends  Thread {
-        private final BluetoothServerSocket mmServerSocket;
-
-        public AcceptThread() {
-            BluetoothServerSocket tmp = null;
-
-            try {
-                tmp = mBluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord(appName, MY_UUID_INSECURE);
-                Log.d("BCTAG", "Connected using" + MY_UUID_INSECURE);
-            } catch (IOException e) {
-
+            {
+                mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                mContext = context;
+                start();
             }
+
+            private class AcceptThread extends  Thread {
+                private final BluetoothServerSocket mmServerSocket;
+
+                public AcceptThread() {
+                    BluetoothServerSocket tmp = null;
+
+                    try {
+                        tmp = mBluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord(appName, MY_UUID_INSECURE);
+                        Log.d("BCTAG", "Connected using" + MY_UUID_INSECURE);
+                    } catch (IOException e) {
+
+                    }
 
             mmServerSocket = tmp;
         }
