@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "E:\\AndroidStudio\\android-BluetoothLeGatt\\Application\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-hr\\values-hr.xml",
+            "outputFile": "E:\\Praca_inzynierska\\Projekt\\LetMeIn\\Android App Base Example\\Application\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-hr\\values-hr.xml",
             "map": [
                 {
                     "source": "C:\\Users\\Raznyy\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-27.0.2.aar\\d45ecb3d827e2b8a6878314353f9a650\\res\\values-hr\\values-hr.xml",

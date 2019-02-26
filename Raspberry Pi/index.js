@@ -1,97 +1,56 @@
+//Importing bleno - Bluetooth server side control library
 var bleno = require('bleno');
 
 //GPIO
 var Gpio = require('onoff').Gpio; //include onoff to interact with the GPIO
 var LED = new Gpio(4, 'out'); //use GPIO pin 4, and specify that it is output
-//var blinkInterval = setInterval(blinkLED, 250); //run the blinkLED function every 250ms
+//var blinkInterval = setInterval(blinkLED, 1000); //run the blinkLED function every 250ms
 
-var fs = require('fs');
-var userFilename = 'users.txt';
+// Include User's functionality
+var user = require('./User/User');
 
 // Once bleno starts, begin advertising our BLE address
-bleno.on('stateChange', function(state) {
+bleno.on('stateChange', function(state) 
+{
     console.log('State change: ' + state);
-    if (state === 'poweredOn') {
+    if (state === 'poweredOn') 
+    {
         bleno.startAdvertising('RaspberryPi',['12ab']);
-        usersCheck();
-        console.log(__dirname);
-    } else if(state === 'unauthorized'){
+        user.usersCheck();
+    } else if(state === 'unauthorized')
+    {
       console.log("unauthorized");
     }
-    else {
+    else 
+    {
         bleno.stopAdvertising();
     }
 });
  
 // Notify the console that we've accepted a connection
-bleno.on('accept', function(clientAddress) {
+bleno.on('accept', function(clientAddress) 
+{
     console.log("Accepted connection from address: " + clientAddress);
-    if(verifyUser(clientAddress))
+    console.log(user.verifyUser(clientAddress));
+    if(user.verifyUser(clientAddress))
     {
       console.log("Jesteś!");
     }
     else
     {
       console.log("Nie ma Cię!");
-      addUser(clientAddress);
+      user.addUser(clientAddress);
     }
 });
 
-function verifyUser(clientAddress)
-{
-  let data = fs.readFileSync(__dirname+"/"+userFilename);
-  
-  var stringData = data.toString();
-  console.log(clientAddress.length);
-  console.log("XXXXXXXXXXXXXXX");
-
-  var arr = stringData.split(",");
-  console.log(arr);
-  for(var i=0;i<arr.length;i++) 
-  {
-    console.log( arr[i] + " NIE ROWNA SIE " + clientAddress);
-    console.log(arr[i].length);
-    
-    
-    if( arr[i] == (clientAddress))
-    {
-      return true;
-    }
-    
-  }
-  return false;
-
-  
-}
-
-function addUser(clientAddress)
-{
-  
-  fs.appendFileSync(__dirname+"/"+userFilename, clientAddress + ",");
-  console.log("dodalem " + clientAddress);
-}
-
-function usersCheck() {
-  fs.open(__dirname+"/"+userFilename,'r',function(err, fd){
-    if (err) {
-      fs.writeFile(__dirname+"/"+userFilename, '', function(err) {
-          if(err) {
-              console.log(err);
-          }
-          console.log("The file was saved!");
-      });
-    } else {
-      console.log("The file exists!");
-    }
-  });
-}
- 
 // Notify the console that we have disconnected from a client
-bleno.on('disconnect', function(clientAddress) {
+bleno.on('disconnect', function(clientAddress) 
+{
     console.log("Disconnected from address: " + clientAddress);
 });
 
-function blinkLED() { //function to start blinking
+function blinkLED() 
+{ //function to start blinking
   if (LED.readSync() === 0) { //check the pin state, if the state is 0 (or off)
     LED.writeSync(1); //set pin state to 1 (turn LED on)
   } else {
@@ -100,14 +59,16 @@ function blinkLED() { //function to start blinking
   console.log("BLINK!");
 }
 
-function endBlink() { //function to stop blinking
+function endBlink() 
+{ //function to stop blinking
   clearInterval(blinkInterval); // Stop blink intervals
   LED.writeSync(0); // Turn LED off
   LED.unexport(); // Unexport GPIO to free resources
 }
 
 // When we begin advertising, create a new service and characteristic
-bleno.on('advertisingStart', function(error) {
+bleno.on('advertisingStart', function(error) 
+{
     if (error) {
         console.log("Advertising start error:" + error);
     } else {
@@ -145,7 +106,7 @@ bleno.on('advertisingStart', function(error) {
                             console.log("Read request received");
                             callback(this.RESULT_SUCCESS, new Buffer("Echo: " + 
                                     (this.value ? this.value.toString("utf-8") : "")));
-                            console.log(callback);
+                            console.log(this.value);
                         },
                         
                         // Accept a new value for the characterstic's value

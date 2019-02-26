@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "E:\\AndroidStudio\\android-BluetoothLeGatt\\Application\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values\\values.xml",
+            "outputFile": "E:\\Praca_inzynierska\\Projekt\\LetMeIn\\Android App Base Example\\Application\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values\\values.xml",
             "map": [
                 {
                     "source": "C:\\Users\\Raznyy\\.gradle\\caches\\transforms-1\\files-1.1\\support-media-compat-27.0.2.aar\\ea5d4889fe861c7c82a7a0ab1bfa0ebb\\res\\values\\values.xml",
@@ -21,22 +21,20 @@
                     }
                 },
                 {
-                    "source": "E:\\AndroidStudio\\android-BluetoothLeGatt\\Application\\src\\main\\res\\values\\template-styles.xml",
+                    "source": "E:\\Praca_inzynierska\\Projekt\\LetMeIn\\Android App Base Example\\Application\\src\\main\\res\\values\\template-dimens.xml",
                     "from": {
-                        "startLines": "24,20,22,27,29,34",
-                        "startColumns": "4,4,4,4,4,4",
-                        "startOffsets": "792,671,735,876,907,1109",
-                        "endLines": "24,20,22,27,32,39",
-                        "endColumns": "51,60,53,27,12,12",
-                        "endOffsets": "839,727,784,899,1101,1387"
+                        "startLines": "28,24,23,22,21,20,29",
+                        "startColumns": "4,4,4,4,4,4,4",
+                        "startOffsets": "987,904,859,813,769,726,1058",
+                        "endColumns": "69,42,43,44,42,41,67",
+                        "endOffsets": "1052,942,898,853,807,763,1121"
                     },
                     "to": {
-                        "startLines": "283,1590,1591,1599,1696,1700",
-                        "startColumns": "4,4,4,4,4,4",
-                        "startOffsets": "18329,104871,104931,105656,113392,113588",
-                        "endLines": "283,1590,1591,1599,1699,1705",
-                        "endColumns": "50,59,52,26,12,12",
-                        "endOffsets": "18375,104926,104979,105678,113583,113861"
+                        "startLines": "168,169,170,171,172,173,197",
+                        "startColumns": "4,4,4,4,4,4,4",
+                        "startOffsets": "11538,11608,11651,11695,11740,11783,13256",
+                        "endColumns": "69,42,43,44,42,41,67",
+                        "endOffsets": "11603,11646,11690,11735,11778,11820,13319"
                     }
                 },
                 {
@@ -56,42 +54,6 @@
                         "endLines": "54,55,154,155,156,157,158,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,198,199,205,206,210,211,212,213,219,273,1539,1543,1545,1551,1553,1694,1695,1792,1796",
                         "endColumns": "68,62,69,67,71,69,60,60,60,61,63,61,60,67,99,59,65,72,68,56,51,61,71,75,34,34,49,33,34,34,69,70,116,12,109,12,128,71,66,35,207",
                         "endOffsets": "3624,3687,10478,10546,10618,10688,10749,11881,11942,12004,12068,12130,12191,12259,12359,12419,12485,12558,12627,12684,12736,12798,13391,13467,13741,13776,13968,14002,14037,14072,14417,17632,101259,101460,101636,102020,102215,113320,113387,128006,128371"
-                    }
-                },
-                {
-                    "source": "E:\\AndroidStudio\\android-BluetoothLeGatt\\Application\\src\\main\\res\\values\\base-strings.xml",
-                    "from": {
-                        "startLines": "18,19",
-                        "startColumns": "4,4",
-                        "startOffsets": "665,719",
-                        "endLines": "18,28",
-                        "endColumns": "52,13",
-                        "endOffsets": "713,999"
-                    },
-                    "to": {
-                        "startLines": "249,254",
-                        "startColumns": "4,4",
-                        "startOffsets": "16541,16846",
-                        "endLines": "249,263",
-                        "endColumns": "52,13",
-                        "endOffsets": "16589,17117"
-                    }
-                },
-                {
-                    "source": "E:\\AndroidStudio\\android-BluetoothLeGatt\\Application\\src\\main\\res\\values\\strings.xml",
-                    "from": {
-                        "startLines": "16,21,22,24,17,18,19,31,32,33,34,20,23,27,26,28",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "702,975,1024,1138,770,816,882,1446,1496,1552,1596,930,1079,1283,1224,1358",
-                        "endColumns": "66,47,53,82,44,64,46,48,54,42,42,43,57,73,57,59",
-                        "endOffsets": "764,1018,1073,1216,810,876,924,1490,1546,1590,1634,969,1132,1352,1277,1413"
-                    },
-                    "to": {
-                        "startLines": "250,251,252,253,264,265,266,267,268,269,270,271,274,275,276,277",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "16594,16661,16709,16763,17122,17167,17232,17279,17328,17383,17426,17469,17637,17695,17769,17827",
-                        "endColumns": "66,47,53,82,44,64,46,48,54,42,42,43,57,73,57,59",
-                        "endOffsets": "16656,16704,16758,16841,17162,17227,17274,17323,17378,17421,17464,17508,17690,17764,17822,17882"
                     }
                 },
                 {
@@ -133,20 +95,58 @@
                     }
                 },
                 {
-                    "source": "E:\\AndroidStudio\\android-BluetoothLeGatt\\Application\\src\\main\\res\\values\\template-dimens.xml",
+                    "source": "E:\\Praca_inzynierska\\Projekt\\LetMeIn\\Android App Base Example\\Application\\src\\main\\res\\values\\strings.xml",
                     "from": {
-                        "startLines": "28,24,23,22,21,20,29",
-                        "startColumns": "4,4,4,4,4,4,4",
-                        "startOffsets": "987,904,859,813,769,726,1058",
-                        "endColumns": "69,42,43,44,42,41,67",
-                        "endOffsets": "1052,942,898,853,807,763,1121"
+                        "startLines": "16,21,22,24,17,18,19,31,32,33,34,20,23,27,26,28",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "702,975,1024,1138,770,816,882,1446,1496,1552,1596,930,1079,1283,1224,1358",
+                        "endColumns": "66,47,53,82,44,64,46,48,54,42,42,43,57,73,57,59",
+                        "endOffsets": "764,1018,1073,1216,810,876,924,1490,1546,1590,1634,969,1132,1352,1277,1413"
                     },
                     "to": {
-                        "startLines": "168,169,170,171,172,173,197",
-                        "startColumns": "4,4,4,4,4,4,4",
-                        "startOffsets": "11538,11608,11651,11695,11740,11783,13256",
-                        "endColumns": "69,42,43,44,42,41,67",
-                        "endOffsets": "11603,11646,11690,11735,11778,11820,13319"
+                        "startLines": "250,251,252,253,264,265,266,267,268,269,270,271,274,275,276,277",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "16594,16661,16709,16763,17122,17167,17232,17279,17328,17383,17426,17469,17637,17695,17769,17827",
+                        "endColumns": "66,47,53,82,44,64,46,48,54,42,42,43,57,73,57,59",
+                        "endOffsets": "16656,16704,16758,16841,17162,17227,17274,17323,17378,17421,17464,17508,17690,17764,17822,17882"
+                    }
+                },
+                {
+                    "source": "E:\\Praca_inzynierska\\Projekt\\LetMeIn\\Android App Base Example\\Application\\src\\main\\res\\values\\template-styles.xml",
+                    "from": {
+                        "startLines": "24,20,22,27,29,34",
+                        "startColumns": "4,4,4,4,4,4",
+                        "startOffsets": "792,671,735,876,907,1109",
+                        "endLines": "24,20,22,27,32,39",
+                        "endColumns": "51,60,53,27,12,12",
+                        "endOffsets": "839,727,784,899,1101,1387"
+                    },
+                    "to": {
+                        "startLines": "283,1590,1591,1599,1696,1700",
+                        "startColumns": "4,4,4,4,4,4",
+                        "startOffsets": "18329,104871,104931,105656,113392,113588",
+                        "endLines": "283,1590,1591,1599,1699,1705",
+                        "endColumns": "50,59,52,26,12,12",
+                        "endOffsets": "18375,104926,104979,105678,113583,113861"
+                    }
+                },
+                {
+                    "source": "E:\\Praca_inzynierska\\Projekt\\LetMeIn\\Android App Base Example\\Application\\src\\main\\res\\values\\base-strings.xml",
+                    "from": {
+                        "startLines": "18,19",
+                        "startColumns": "4,4",
+                        "startOffsets": "665,719",
+                        "endLines": "18,28",
+                        "endColumns": "52,13",
+                        "endOffsets": "713,999"
+                    },
+                    "to": {
+                        "startLines": "249,254",
+                        "startColumns": "4,4",
+                        "startOffsets": "16541,16846",
+                        "endLines": "249,263",
+                        "endColumns": "52,13",
+                        "endOffsets": "16589,17117"
                     }
                 }
             ]

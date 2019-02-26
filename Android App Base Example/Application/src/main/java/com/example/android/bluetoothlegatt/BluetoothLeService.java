@@ -63,8 +63,11 @@ public class BluetoothLeService extends Service {
     public final static String EXTRA_DATA =
             "com.example.bluetooth.le.EXTRA_DATA";
 
-    public final static UUID UUID_HEART_RATE_MEASUREMENT =
-            UUID.fromString(SampleGattAttributes.HEART_RATE_MEASUREMENT);
+    public final static String ACTION_USER_CHECK =
+            "com.example.bluetooth.le.ACTION_USER_CHECK";
+
+    public final static UUID USER_CHECK =
+            UUID.fromString(SampleGattAttributes.ACTION_USER_CHECK);
 
     // Implements callback methods for GATT events that the app cares about.  For example,
     // connection change and services discovered.
@@ -77,6 +80,9 @@ public class BluetoothLeService extends Service {
                 mConnectionState = STATE_CONNECTED;
                 broadcastUpdate(intentAction);
                 Log.i(TAG, "Connected to GATT server.");
+                // Check if user should be able to recive proceted connecion
+                // Sending data with check action
+
                 // Attempts to discover services after successful connection.
                 Log.i(TAG, "Attempting to start service discovery:" +
                         mBluetoothGatt.discoverServices());
@@ -105,13 +111,19 @@ public class BluetoothLeService extends Service {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
             }
-            Log.d("TEST", "TESTUJEMY TO !");
+            //Log.d("TEST", "TESTUJEMY TO !");
         }
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt,
                                             BluetoothGattCharacteristic characteristic) {
             broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
+        }
+
+        @Override
+        public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+            super.onCharacteristicWrite(gatt, characteristic, status);
+            Log.d(TAG, "WPISALISMY DANE POPRAWNIE");
         }
     };
 
@@ -127,6 +139,9 @@ public class BluetoothLeService extends Service {
         // This is special handling for the Heart Rate Measurement profile.  Data parsing is
         // carried out as per profile specifications:
         // http://developer.bluetooth.org/gatt/characteristics/Pages/CharacteristicViewer.aspx?u=org.bluetooth.characteristic.heart_rate_measurement.xml
+//        Log.d(TAG, "action" + action + " characteristic " + characteristic);
+
+        /*
         if (UUID_HEART_RATE_MEASUREMENT.equals(characteristic.getUuid())) {
             int flag = characteristic.getProperties();
             int format = -1;
@@ -149,9 +164,19 @@ public class BluetoothLeService extends Service {
                     stringBuilder.append(String.format("%02X ", byteChar));
                 intent.putExtra(EXTRA_DATA, new String(data) + "\n" + stringBuilder.toString());
             }
-        }
+        }*/
+        intent.putExtra("EXTRA_DATA", "Sprawdzamy usera");
         sendBroadcast(intent);
     }
+
+    public boolean writeData( String action, String data )
+    {
+        Log.i(TAG, "!!!!!!!!!!!!!!action" + action + " characteristic " + data);
+//        BluetoothGattService mService =
+        Log.i(TAG, " " + getSupportedGattServices() );
+        return true;
+    }
+
 
     public class LocalBinder extends Binder {
         BluetoothLeService getService() {
@@ -222,6 +247,7 @@ public class BluetoothLeService extends Service {
             Log.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
             if (mBluetoothGatt.connect()) {
                 mConnectionState = STATE_CONNECTING;
+                Log.d(TAG,"Tutaj sprawdzamy czy haslo jest podane");
                 return true;
             } else {
                 return false;
@@ -298,7 +324,7 @@ public class BluetoothLeService extends Service {
         mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
 
         // This is specific to Heart Rate Measurement.
-        if (UUID_HEART_RATE_MEASUREMENT.equals(characteristic.getUuid())) {
+        if (USER_CHECK.equals(characteristic.getUuid())) {
             BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
                     UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
@@ -317,4 +343,5 @@ public class BluetoothLeService extends Service {
 
         return mBluetoothGatt.getServices();
     }
+
 }

@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "E:\\AndroidStudio\\android-BluetoothLeGatt\\Application\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-v21\\values-v21.xml",
+            "outputFile": "E:\\Praca_inzynierska\\Projekt\\LetMeIn\\Android App Base Example\\Application\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-v21\\values-v21.xml",
             "map": [
                 {
-                    "source": "E:\\AndroidStudio\\android-BluetoothLeGatt\\Application\\src\\main\\res\\values-v21\\base-template-styles.xml",
+                    "source": "E:\\Praca_inzynierska\\Projekt\\LetMeIn\\Android App Base Example\\Application\\src\\main\\res\\values-v21\\base-template-styles.xml",
                     "from": {
                         "startLines": "20",
                         "startColumns": "4",
