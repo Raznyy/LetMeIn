@@ -16,6 +16,8 @@
 
 package com.example.android.bluetoothlegatt;
 
+import android.util.Log;
+
 import java.util.HashMap;
 
 /**
@@ -23,20 +25,23 @@ import java.util.HashMap;
  */
 public class SampleGattAttributes {
     private static HashMap<String, String> attributes = new HashMap();
+
     public static String ACTION_USER_CHECK = "0000ffe9-0000-1000-8000-00805f9b34fb";
     public static String CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";
 
     static {
         // Sample Services.
-        attributes.put("0000180d-0000-1000-8000-00805f9b34fb", "Heart Rate Service");
-        attributes.put("0000180a-0000-1000-8000-00805f9b34fb", "Device Information Service");
+        //attributes.put("0000180d-0000-1000-8000-00805f9b34fb", "Heart Rate Service");
+        //attributes.put("0000180a-0000-1000-8000-00805f9b34fb", "Device Information Service");
         // Sample Characteristics.
-        attributes.put(ACTION_USER_CHECK, "ACTION_USER_CHECK");
-        attributes.put("00002a29-0000-1000-8000-00805f9b34fb", "Manufacturer Name String");
+        attributes.put(ACTION_USER_CHECK, CLIENT_CHARACTERISTIC_CONFIG);
+        attributes.put(CLIENT_CHARACTERISTIC_CONFIG, "Tutaj moj string");
     }
 
-    public static String lookup(String uuid, String defaultName) {
+    public static String lookup(String uuid, String defaultName)
+    {
         String name = attributes.get(uuid);
+        Log.e("Test", uuid + " ----------- " + name);
         return name == null ? defaultName : name;
     }
 }

@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2013 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.example.android.bluetoothlegatt;
 
 import android.app.Service;
@@ -32,6 +16,8 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.UUID;
 
@@ -66,8 +52,9 @@ public class BluetoothLeService extends Service {
     public final static String ACTION_USER_CHECK =
             "com.example.bluetooth.le.ACTION_USER_CHECK";
 
-    public final static UUID USER_CHECK =
-            UUID.fromString(SampleGattAttributes.ACTION_USER_CHECK);
+
+    final UUID USER_CHECK_UUID = UUID.fromString(SampleGattAttributes.ACTION_USER_CHECK);
+    final UUID USER_CHECK_CHARACTERISTICS_UUID = UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG);
 
     // Implements callback methods for GATT events that the app cares about.  For example,
     // connection change and services discovered.
@@ -81,11 +68,12 @@ public class BluetoothLeService extends Service {
                 broadcastUpdate(intentAction);
                 Log.i(TAG, "Connected to GATT server.");
                 // Check if user should be able to recive proceted connecion
+
                 // Sending data with check action
 
                 // Attempts to discover services after successful connection.
                 Log.i(TAG, "Attempting to start service discovery:" +
-                        mBluetoothGatt.discoverServices());
+                       mBluetoothGatt.discoverServices());
 
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 intentAction = ACTION_GATT_DISCONNECTED;
@@ -97,7 +85,34 @@ public class BluetoothLeService extends Service {
 
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
-            if (status == BluetoothGatt.GATT_SUCCESS) {
+            if (status == BluetoothGatt.GATT_SUCCESS)
+            {
+                Log.e(TAG, "USER_CHECK_UUID   " + USER_CHECK_CHARACTERISTICS_UUID);
+
+                for (BluetoothGattService gattService : gatt.getServices())
+                {
+                    Log.i(TAG, "onServicesDiscovered: ---------------------");
+                    Log.i(TAG, "onServicesDiscovered: service=" + gattService.getUuid());
+                    for ( BluetoothGattCharacteristic characteristic : gattService.getCharacteristics())
+                    {
+                        Log.i(TAG, "onServicesDiscovered: characteristic=" + characteristic.getUuid());
+
+                        if( characteristic.getUuid().toString().equals("00002902-0000-1000-8000-00805f9b34fb"))
+                        {
+                            Log.w(TAG, "onServicesDiscovered: found LED");
+
+                            String originalString = "560D0F0600F0AA";
+
+                            byte[] byteData = hexStringToByteArray(originalString);
+
+                            boolean valuesucces = characteristic.setValue(byteData);
+                            Log.e(TAG, " VALUEUPDATE " + valuesucces );
+                            mBluetoothGatt.writeCharacteristic(characteristic);
+
+                            Log.i(TAG, "onServicesDiscovered: , write bytes?! " + byteData.toString());
+                        }
+                    }
+                }
                 broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED);
             } else {
                 Log.w(TAG, "onServicesDiscovered received: " + status);
@@ -123,6 +138,9 @@ public class BluetoothLeService extends Service {
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicWrite(gatt, characteristic, status);
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
+            }
             Log.d(TAG, "WPISALISMY DANE POPRAWNIE");
         }
     };
@@ -165,16 +183,20 @@ public class BluetoothLeService extends Service {
                 intent.putExtra(EXTRA_DATA, new String(data) + "\n" + stringBuilder.toString());
             }
         }*/
-        intent.putExtra("EXTRA_DATA", "Sprawdzamy usera");
-        sendBroadcast(intent);
-    }
 
-    public boolean writeData( String action, String data )
-    {
-        Log.i(TAG, "!!!!!!!!!!!!!!action" + action + " characteristic " + data);
-//        BluetoothGattService mService =
-        Log.i(TAG, " " + getSupportedGattServices() );
-        return true;
+        /*
+        final byte[] data = characteristic.getValue();
+
+        if (data != null && data.length > 0) {
+            final StringBuilder stringBuilder = new StringBuilder(data.length);
+            for(byte byteChar : data)
+                stringBuilder.append(String.format("%02X ", byteChar));
+            intent.putExtra(EXTRA_DATA, new String(data) + "\n" + stringBuilder.toString());
+        }
+        */
+
+        Log.d(TAG, "UUID " + characteristic.getUuid() + " characteristic " + characteristic.getValue());
+        sendBroadcast(intent);
     }
 
 
@@ -324,13 +346,42 @@ public class BluetoothLeService extends Service {
         mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
 
         // This is specific to Heart Rate Measurement.
-        if (USER_CHECK.equals(characteristic.getUuid())) {
-            BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
-                    UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
-            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-            mBluetoothGatt.writeDescriptor(descriptor);
-        }
+//        if (USER_CHECK_UUID.equals(characteristic.getUuid()))
+//        {
+//            BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
+//                    UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
+//            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+//            mBluetoothGatt.writeDescriptor(descriptor);
+//        }
     }
+
+    public boolean writeCharacteristic(BluetoothGattCharacteristic characteristic)
+    {
+        Log.i(TAG, "writeCharacteristic: ---------------------");
+        Log.i(TAG, "writeCharacteristic: characteristics=" + characteristic);
+
+        mBluetoothGatt.writeCharacteristic(characteristic);
+
+//        if (USER_CHECK_UUID.equals(characteristic.getUuid().toString()))
+//        {
+//            Log.i(TAG, "writeCharacteristic: ---------------------");
+//            Log.i(TAG, "writeCharacteristic: USER_CHECK_UUID=" + characteristic.getUuid());
+//        }
+        return true;
+    }
+
+    // Parsing String data to bytes array - provided for writing request to the server
+    public static byte[] hexStringToByteArray(String s)
+    {
+        int len = s.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+                    + Character.digit(s.charAt(i + 1), 16));
+        }
+        return data;
+    }
+
 
     /**
      * Retrieves a list of supported GATT services on the connected device. This should be
