@@ -9,8 +9,7 @@ var LED = new Gpio(4, 'out'); //use GPIO pin 4, and specify that it is output
 // Include User's functionality
 var user = require('./User/User');
 
-// Beacons UUID to advertise
-const UUID = "0000ffe9-0000-1000-8000-00805f9b34fb"; 
+
 
 function blinkLED() 
 { //function to start blinking
@@ -51,7 +50,8 @@ bleno.on('stateChange', function(state)
 bleno.on('accept', function(clientAddress) 
 {
     console.log("Accepted connection from address: " + clientAddress);
-    console.log(user.verifyUser(clientAddress));
+    //userUUIDAdress = clientAddress;
+    // TO DO : Implement User class
     if(user.verifyUser(clientAddress))
     {
       console.log("Jesteś!");
@@ -72,7 +72,10 @@ bleno.on('disconnect', function(clientAddress)
 // When we begin advertising, create a new service and characteristic
 bleno.on('advertisingStart', function(error) 
 {
-    if (error) {
+    var userStatus = user.checkUserLoginStatus();
+    var testData = "";
+    if (error) 
+    {
         console.log("Advertising start error:" + error);
     } 
     /* else {
@@ -130,49 +133,56 @@ bleno.on('advertisingStart', function(error)
     {
         bleno.setServices([
             
+            
             // Define a new service
             new bleno.PrimaryService({
                 uuid : '0000ffe9-0000-1000-8000-00805f9b34fb',
                 characteristics : [
                     
                     // Define a new characteristic within that service
+                    
                     new bleno.Characteristic({
                         value : null,
                         uuid : '00002902-0000-1000-8000-00805f9b34fb',
-                        properties : ['write'],
-                        
-                        // If the client subscribes, we send out a message every 1 second
-                        onSubscribe : function(maxValueSize, updateValueCallback) {
-                            console.log("Device subscribed");
-                            this.intervalId = setInterval(function() {
-                                console.log("Sending: Hi!");
-                                updateValueCallback(new Buffer("Hi!"));
-                            }, 1000);
-                        },
-                        
-                        // If the client unsubscribes, we stop broadcasting the message
-                        onUnsubscribe : function() {
-                            console.log("Device unsubscribed");
-                            clearInterval(this.intervalId);
-                        },
-                        
+                        properties : ['read'],
+                                                
                         // Send a message back to the client with the characteristic's value
                         onReadRequest : function(offset, callback) {
                             console.log("Read request received");
-                            callback(this.RESULT_SUCCESS, new Buffer("Echo: " + 
-                                    (this.value ? this.value.toString("utf-8") : "xd")));
-                            console.log(this.value.toString("utf-8"));
-                        },
-                        
-                        // Accept a new value for the characterstic's value
-                        onWriteRequest : function(data, offset, withoutResponse, callback) {
-                            this.value = data;
-                            console.log('Write request: value = ' + this.value.toString("utf-8"));
-
-                            console.log(data);
-                            callback(this.RESULT_SUCCESS);
+                            console.log(this.RESULT_SUCCESS);
+                            //callback(this.RESULT_SUCCESS, new Buffer("Echo: " + (this.value ? this.value.toString("utf-8") : "xd")));
+                            
+                            // TO DO: Respond with all data 
+                            callback(this.RESULT_SUCCESS, new Buffer("Echo: " + );
+                            console.log("USER STATUS ON READ : " + testData.toString("utf-8"));
                         }
  
+                    }),
+
+                    // Define a new characteristic within that service
+                    new bleno.Characteristic({
+                        uuid : 'a922bc74-81dc-444a-8f5f-fbe1a4ec685c',
+                        properties : ['write' ],
+
+                        // Accept a new value for the characterstic's value
+                        onWriteRequest : function(data, offset, withoutResponse, callback)
+                        {
+                            dataStringParsed = data.toString('utf-8').split(":");
+                            if( dataStringParsed[0] == 'A' )
+                            {
+                                switch(dataStringParsed[1])
+                                {
+                                    case "USER_CHECK":
+                                        console.log( " Verify User : " + user.verifyUser());
+                                }
+                            }
+                            else if ( dataStringParsed[0] == "V" )
+                            {
+                                console.log("Value : " + dataStringParsed[1]);
+                            }
+                            callback(this.RESULT_SUCCESS);
+                        }
+
                     })
                     
                 ]

@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2013 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.example.android.bluetoothlegatt;
 
 import android.util.Log;
@@ -26,22 +10,24 @@ import java.util.HashMap;
 public class SampleGattAttributes {
     private static HashMap<String, String> attributes = new HashMap();
 
-    public static String ACTION_USER_CHECK = "0000ffe9-0000-1000-8000-00805f9b34fb";
-    public static String CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";
+    public static String ACTION_USER_CHECK_SERVICE = "0000ffe9-0000-1000-8000-00805f9b34fb";
+    public static String ACTION_READ_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";
+    public static String WRITE_CHARACTERISTICS = "a922bc74-81dc-444a-8f5f-fbe1a4ec685c";
 
     static {
         // Sample Services.
         //attributes.put("0000180d-0000-1000-8000-00805f9b34fb", "Heart Rate Service");
         //attributes.put("0000180a-0000-1000-8000-00805f9b34fb", "Device Information Service");
         // Sample Characteristics.
-        attributes.put(ACTION_USER_CHECK, CLIENT_CHARACTERISTIC_CONFIG);
-        attributes.put(CLIENT_CHARACTERISTIC_CONFIG, "Tutaj moj string");
+        attributes.put(ACTION_USER_CHECK_SERVICE, ACTION_READ_CHARACTERISTIC_CONFIG);
+        attributes.put(ACTION_USER_CHECK_SERVICE, WRITE_CHARACTERISTICS);
+        attributes.put(ACTION_READ_CHARACTERISTIC_CONFIG, "Read data");
+        attributes.put(WRITE_CHARACTERISTICS, "Write data");
     }
 
     public static String lookup(String uuid, String defaultName)
     {
         String name = attributes.get(uuid);
-        Log.e("Test", uuid + " ----------- " + name);
         return name == null ? defaultName : name;
     }
 }

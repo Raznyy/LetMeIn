@@ -1,5 +1,7 @@
 var fs = require('fs');
 var userFilename = 'users.txt';
+var userUUIDAdress;
+var userLoginStatus;
 
 module.exports =
 {
@@ -14,6 +16,10 @@ module.exports =
   addUser: function(clientAddress)
   {
     addUserFunction(clientAddress);
+  },
+  checkUserLoginStatus: function(clientAddress)
+  {
+    return checkUserLoginStatusFunction(clientAddress);
   }
 }
 
@@ -54,5 +60,11 @@ function addUserFunction(clientAddress)
 {
   fs.appendFileSync(__dirname+"/"+userFilename, clientAddress + ",");
   console.log("dodalem " + clientAddress);
+}
+
+function checkUserLoginStatusFunction( clientAddress )
+{
+  console.log(" User status " + this.userLoginStatus);
+  return true;
 }
 
