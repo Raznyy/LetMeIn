@@ -7,8 +7,8 @@ var LED = new Gpio(4, 'out'); //use GPIO pin 4, and specify that it is output
 //var blinkInterval = setInterval(blinkLED, 1000); //run the blinkLED function every 250ms
 
 // Include User's functionality
-var user = require('./User/User');
-
+var userClass = require('./User/User');
+var user;
 
 
 function blinkLED() 
@@ -31,6 +31,7 @@ function endBlink()
 // Once bleno starts, begin advertising our BLE address
 bleno.on('stateChange', function(state) 
 {
+    user = new userClass("");
     console.log('State change: ' + state);
     if (state === 'poweredOn') 
     {
@@ -50,16 +51,18 @@ bleno.on('stateChange', function(state)
 bleno.on('accept', function(clientAddress) 
 {
     console.log("Accepted connection from address: " + clientAddress);
-    //userUUIDAdress = clientAddress;
+    
+    user.setUUIDAdress(clientAddress);
+
     // TO DO : Implement User class
-    if(user.verifyUser(clientAddress))
+    if(user.verifyUser())
     {
       console.log("Jesteś!");
     }
     else
     {
       console.log("Nie ma Cię!");
-      user.addUser(clientAddress);
+      user.addUser();
     }
 });
 
@@ -149,20 +152,18 @@ bleno.on('advertisingStart', function(error)
                         // Send a message back to the client with the characteristic's value
                         onReadRequest : function(offset, callback) {
                             console.log("Read request received");
-                            console.log(this.RESULT_SUCCESS);
-                            //callback(this.RESULT_SUCCESS, new Buffer("Echo: " + (this.value ? this.value.toString("utf-8") : "xd")));
                             
-                            // TO DO: Respond with all data 
-                            callback(this.RESULT_SUCCESS, new Buffer("Echo: " + );
-                            console.log("USER STATUS ON READ : " + testData.toString("utf-8"));
+                            console.log("------------------");
+                            console.log(user.userLoginStatus);
+
+                            callback(this.RESULT_SUCCESS, new Buffer(user.userLoginStatus.toString("utf-8")));
                         }
- 
                     }),
 
                     // Define a new characteristic within that service
                     new bleno.Characteristic({
                         uuid : 'a922bc74-81dc-444a-8f5f-fbe1a4ec685c',
-                        properties : ['write' ],
+                        properties : ['write', "read" ],
 
                         // Accept a new value for the characterstic's value
                         onWriteRequest : function(data, offset, withoutResponse, callback)
@@ -173,18 +174,31 @@ bleno.on('advertisingStart', function(error)
                                 switch(dataStringParsed[1])
                                 {
                                     case "USER_CHECK":
+                                    {
                                         console.log( " Verify User : " + user.verifyUser());
+                                    }
                                 }
                             }
-                            else if ( dataStringParsed[0] == "V" )
+                            if ( dataStringParsed[0] == "V" )
                             {
                                 console.log("Value : " + dataStringParsed[1]);
                             }
                             callback(this.RESULT_SUCCESS);
-                        }
+                        },
 
-                    })
-                    
+                        // Send a message back to the client with the characteristic's value
+                        onReadRequest : function(offset, callback) 
+                        {
+                            console.log("------------------");
+                            console.log(user.userLoginStatus);
+                            console.log("------------------");
+                            console.log(this.RESULT_SUCCESS);
+                            //callback(this.RESULT_SUCCESS, new Buffer("Echo: " + (this.value ? this.value.toString("utf-8") : "xd")));
+                            
+                            // TO DO: Respond with all data 
+                            callback(this.RESULT_SUCCESS, new Buffer("Echo:"));
+                        }
+                    })    
                 ]
             })
         ]);

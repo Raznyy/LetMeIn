@@ -54,6 +54,7 @@ public class BluetoothLeService extends Service {
 
 
     private static final String ACTION_USER_CHECK_SERVICE_UUID = SampleGattAttributes.ACTION_USER_CHECK_SERVICE;
+    private static final String ACTION_READ_CHARACTERISTIC_CONFIG_UUID = SampleGattAttributes.ACTION_READ_CHARACTERISTIC_CONFIG;
     private static final String WRITE_CHARACTERISTICS_UUID = SampleGattAttributes.WRITE_CHARACTERISTICS;
 
     // Implements callback methods for GATT events that the app cares about.  For example,
@@ -71,8 +72,6 @@ public class BluetoothLeService extends Service {
 
                 // Attempts to discover services after successful connection.
                 Log.i(TAG, "Attempting to start service discovery:" + mBluetoothGatt.discoverServices());
-
-
 
             }
             else if (newState == BluetoothProfile.STATE_DISCONNECTED)
@@ -94,9 +93,14 @@ public class BluetoothLeService extends Service {
                     Log.i(TAG, "onServicesDiscovered: service=" + gattService.getUuid());
                     for ( BluetoothGattCharacteristic characteristic : gattService.getCharacteristics())
                     {
-                        if( characteristic.getUuid().toString().equals(WRITE_CHARACTERISTICS_UUID))
+                        String uuidString = characteristic.getUuid().toString();
+                        if( uuidString.equals(WRITE_CHARACTERISTICS_UUID))
                         {
                             writeCharacteristic(characteristic);
+                        }
+                        if( uuidString.equals(ACTION_READ_CHARACTERISTIC_CONFIG_UUID))
+                        {
+                            readCharacteristic(characteristic);
                         }
                     }
                 }
@@ -110,7 +114,8 @@ public class BluetoothLeService extends Service {
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status)
         {
             Log.e(TAG, "onCharacteristicRead ");
-            if (status == BluetoothGatt.GATT_SUCCESS) {
+            if (status == BluetoothGatt.GATT_SUCCESS)
+            {
                 broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
             }
         }
@@ -183,7 +188,7 @@ public class BluetoothLeService extends Service {
                 stringBuilder.append(String.format("%02X ", byteChar));
             intent.putExtra(EXTRA_DATA, new String(data) + "\n" + stringBuilder.toString());
         }
-        
+
         Log.d(TAG, "UUID " + characteristic.getUuid() + " characteristic " + characteristic.getValue());
         sendBroadcast(intent);
     }
@@ -312,7 +317,8 @@ public class BluetoothLeService extends Service {
      *
      * @param characteristic The characteristic to read from.
      */
-    public void readCharacteristic(BluetoothGattCharacteristic characteristic) {
+    public void readCharacteristic(BluetoothGattCharacteristic characteristic)
+    {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
@@ -326,8 +332,8 @@ public class BluetoothLeService extends Service {
      * @param characteristic Characteristic to act on.
      * @param enabled If true, enable notification.  False otherwise.
      */
-    public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic,
-                                              boolean enabled) {
+    public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic, boolean enabled)
+    {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
@@ -344,6 +350,7 @@ public class BluetoothLeService extends Service {
 //        }
     }
 
+
     public boolean writeCharacteristic(BluetoothGattCharacteristic characteristic)
     {
 
@@ -353,9 +360,18 @@ public class BluetoothLeService extends Service {
         characteristic.setWriteType(characteristic.WRITE_TYPE_DEFAULT);
         boolean valueSucces = characteristic.setValue(action);
         Log.e(TAG, " ACTION " + action );
-        mBluetoothGatt.writeCharacteristic(characteristic);
+        if(valueSucces)
+        {
+            mBluetoothGatt.writeCharacteristic(characteristic);
+        }
+        else
+        {
+            return false;
+        }
 
-        try {
+        /*
+        try
+        {
             Thread.sleep(200);
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -363,10 +379,17 @@ public class BluetoothLeService extends Service {
 
         valueSucces = characteristic.setValue(value);
         Log.e(TAG, " writeCharacteristic2  " + valueSucces );
-        Log.e(TAG, " SECOND STRING"  );
-        mBluetoothGatt.writeCharacteristic(characteristic);
-
+        if(valueSucces)
+        {
+            mBluetoothGatt.writeCharacteristic(characteristic);
+        }
+        else
+        {
+            return false;
+        }
+        */
         return true;
+
     }
 
     public String getAction( String uuid )
