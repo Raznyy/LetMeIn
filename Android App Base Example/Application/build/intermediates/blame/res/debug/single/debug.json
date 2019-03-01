@@ -1060,6 +1060,10 @@
         "source": "C:\\Users\\Raznyy\\.gradle\\caches\\transforms-1\\files-1.1\\support-media-compat-27.0.2.aar\\ea5d4889fe861c7c82a7a0ab1bfa0ebb\\res\\layout\\notification_template_lines_media.xml"
     },
     {
+        "merged": "E:\\Praca_inzynierska\\Projekt\\LetMeIn\\Android App Base Example\\Application\\build\\intermediates\\res\\merged\\debug\\layout_pin_alert.xml.flat",
+        "source": "E:\\Praca_inzynierska\\Projekt\\LetMeIn\\Android App Base Example\\Application\\src\\main\\res\\layout\\pin_alert.xml"
+    },
+    {
         "merged": "E:\\Praca_inzynierska\\Projekt\\LetMeIn\\Android App Base Example\\Application\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi-v4_abc_textfield_default_mtrl_alpha.9.png.flat",
         "source": "C:\\Users\\Raznyy\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.0.2.aar\\3ff8dd645f7205be55880f1000f50db8\\res\\drawable-xhdpi-v4\\abc_textfield_default_mtrl_alpha.9.png"
     },

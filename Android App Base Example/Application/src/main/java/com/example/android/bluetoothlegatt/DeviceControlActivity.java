@@ -1,24 +1,32 @@
 package com.example.android.bluetoothlegatt;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,6 +57,8 @@ public class DeviceControlActivity extends Activity {
 
     private final String LIST_NAME = "NAME";
     private final String LIST_UUID = "UUID";
+
+    public String pinCode;
 
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -109,7 +119,8 @@ public class DeviceControlActivity extends Activity {
                 Log.e(TAG, extraDataParsed[0]);
                 if(extraDataParsed[0].equals("declined"))
                 {
-                    mBluetoothLeService.disconnect();
+                    int pinCode = requestPinCode();
+                    //mBluetoothLeService.disconnect();
                 }
                 else if (extraData.equals("approved"))
                 {
@@ -120,6 +131,37 @@ public class DeviceControlActivity extends Activity {
             }
         }
     };
+
+    private int requestPinCode()
+    {
+        //final EditText input = new EditText(this);
+        //input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_TEXT_VARIATION_PASSWORD );
+
+
+
+        final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+
+        LayoutInflater mLayoutInflater = this.getLayoutInflater();
+        View pinEntryTextView = mLayoutInflater.inflate(R.layout.pin_alert, null);
+
+        alertDialog.setTitle("Please provide PIN to enter.");
+        alertDialog.setMessage("PIN");
+
+        final PinEntryEditText txtPinEntry =(PinEntryEditText) pinEntryTextView.findViewById(R.id.txt_pin_entry);
+        alertDialog.setView(pinEntryTextView);
+
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "ENTER", new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog, int which)
+            {
+                Log.e("TAG", "TXT PIN ENTRY " + txtPinEntry.getPinCode());
+                dialog.dismiss();
+            }
+        });
+
+        alertDialog.show();
+        return 0;
+    }
 
     // If a given GATT characteristic is selected, check for supported features.  This sample
     // demonstrates 'Read' and 'Notify' features.  See

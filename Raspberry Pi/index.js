@@ -62,7 +62,7 @@ bleno.on('accept', function(clientAddress)
     else
     {
       console.log("Nie ma Cię!");
-      user.addUser();
+    //   user.addUser();
     }
 });
 
