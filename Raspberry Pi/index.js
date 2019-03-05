@@ -10,6 +10,14 @@ var LED = new Gpio(4, 'out'); //use GPIO pin 4, and specify that it is output
 var userClass = require('./User/User');
 var user;
 
+//Locker init
+var lockerObject = require('./Locker/Locker.js');
+var locker = new lockerObject("RaspberryPi", "2222");
+
+function onCreate()
+{
+    
+}
 
 function blinkLED() 
 { //function to start blinking
@@ -62,7 +70,7 @@ bleno.on('accept', function(clientAddress)
     else
     {
       console.log("Nie ma Cię!");
-    //   user.addUser();
+      //user.addUser();
     }
 });
 
@@ -75,67 +83,13 @@ bleno.on('disconnect', function(clientAddress)
 // When we begin advertising, create a new service and characteristic
 bleno.on('advertisingStart', function(error) 
 {
-    var userStatus = user.checkUserLoginStatus();
-    var testData = "";
     if (error) 
     {
         console.log("Advertising start error:" + error);
     } 
-    /* else {
-        console.log("Advertising start success");
-        bleno.setServices([
-            
-            // Define a new service
-            new bleno.PrimaryService({
-                uuid : '12ab',
-                characteristics : [
-                    
-                    // Define a new characteristic within that service
-                    new bleno.Characteristic({
-                        value : null,
-                        uuid : '34cd',
-                        properties : ['notify', 'read', 'write'],
-                        
-                        // If the client subscribes, we send out a message every 1 second
-                        onSubscribe : function(maxValueSize, updateValueCallback) {
-                            console.log("Device subscribed");
-                            this.intervalId = setInterval(function() {
-                                console.log("Sending: Hi!");
-                                updateValueCallback(new Buffer("Hi!"));
-                            }, 1000);
-                        },
-                        
-                        // If the client unsubscribes, we stop broadcasting the message
-                        onUnsubscribe : function() {
-                            console.log("Device unsubscribed");
-                            clearInterval(this.intervalId);
-                        },
-                        
-                        // Send a message back to the client with the characteristic's value
-                        onReadRequest : function(offset, callback) {
-                            console.log("Read request received");
-                            callback(this.RESULT_SUCCESS, new Buffer("Echo: " + 
-                                    (this.value ? this.value.toString("utf-8") : "")));
-                            console.log(this.value);
-                        },
-                        
-                        // Accept a new value for the characterstic's value
-                        onWriteRequest : function(data, offset, withoutResponse, callback) {
-                            this.value = data;
-                            console.log('Write request: value = ' + this.value.toString("utf-8"));
-                            callback(this.RESULT_SUCCESS);
-                        }
- 
-                    })
-                    
-                ]
-            })
-        ]);
-    }*/
     else 
     {
         bleno.setServices([
-            
             
             // Define a new service
             new bleno.PrimaryService({
@@ -150,7 +104,8 @@ bleno.on('advertisingStart', function(error)
                         properties : ['read'],
                                                 
                         // Send a message back to the client with the characteristic's value
-                        onReadRequest : function(offset, callback) {
+                        onReadRequest : function(offset, callback) 
+                        {
                             console.log("Read request received");
                             
                             console.log("------------------");
@@ -163,28 +118,8 @@ bleno.on('advertisingStart', function(error)
                     // Define a new characteristic within that service
                     new bleno.Characteristic({
                         uuid : 'a922bc74-81dc-444a-8f5f-fbe1a4ec685c',
-                        properties : ['write', "read" ],
-
-                        // Accept a new value for the characterstic's value
-                        onWriteRequest : function(data, offset, withoutResponse, callback)
-                        {
-                            dataStringParsed = data.toString('utf-8').split(":");
-                            if( dataStringParsed[0] == 'A' )
-                            {
-                                switch(dataStringParsed[1])
-                                {
-                                    case "USER_CHECK":
-                                    {
-                                        console.log( " Verify User : " + user.verifyUser());
-                                    }
-                                }
-                            }
-                            if ( dataStringParsed[0] == "V" )
-                            {
-                                console.log("Value : " + dataStringParsed[1]);
-                            }
-                            callback(this.RESULT_SUCCESS);
-                        },
+                        value : false,
+                        properties : [ 'read', 'write' ],
 
                         // Send a message back to the client with the characteristic's value
                         onReadRequest : function(offset, callback) 
@@ -192,13 +127,37 @@ bleno.on('advertisingStart', function(error)
                             console.log("------------------");
                             console.log(user.userLoginStatus);
                             console.log("------------------");
-                            console.log(this.RESULT_SUCCESS);
                             //callback(this.RESULT_SUCCESS, new Buffer("Echo: " + (this.value ? this.value.toString("utf-8") : "xd")));
                             
                             // TO DO: Respond with all data 
-                            callback(this.RESULT_SUCCESS, new Buffer("Echo:"));
-                        }
-                    })    
+                            callback(this.RESULT_SUCCESS, new Buffer("PINVER" + this.value.toString("utf-8")));
+                        },
+
+                        // Accept a new value for the characterstic's value
+                        onWriteRequest : function(data, offset, withoutResponse, callback)
+                        {
+                            dataStringParsed = data.toString('utf-8').split(":");
+                            
+                            if( dataStringParsed[1] == "USER_CHECK" ) 
+                            {
+                                console.log( " Verify User : " + user.verifyUser());
+                                // var blinkInterval = setInterval(blinkLED, 1000);
+                            }
+                            else if( dataStringParsed[1] == "PIN_CHECK" )
+                            {
+                                var PINValidation = locker.checkPIN(dataStringParsed[3]);
+                                if(PINValidation)
+                                {
+                                    this.value = true;
+                                }
+                                else
+                                {
+                                    this.value = false;
+                                }
+                                callback(this.RESULT_SUCCESS);
+                            }
+                        }                        
+                    }),
                 ]
             })
         ]);

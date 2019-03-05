@@ -50,8 +50,7 @@ public class DeviceControlActivity extends Activity {
     private String mDeviceAddress;
     private ExpandableListView mGattServicesList;
     private BluetoothLeService mBluetoothLeService;
-    private ArrayList<ArrayList<BluetoothGattCharacteristic>> mGattCharacteristics =
-            new ArrayList<ArrayList<BluetoothGattCharacteristic>>();
+    private ArrayList<ArrayList<BluetoothGattCharacteristic>> mGattCharacteristics = new ArrayList<ArrayList<BluetoothGattCharacteristic>>();
     private boolean mConnected = false;
     private BluetoothGattCharacteristic mNotifyCharacteristic;
 
@@ -119,27 +118,43 @@ public class DeviceControlActivity extends Activity {
                 Log.e(TAG, extraDataParsed[0]);
                 if(extraDataParsed[0].equals("declined"))
                 {
-                    int pinCode = requestPinCode();
-                    //mBluetoothLeService.disconnect();
+                    requestPinCode(new alertDialogResponse() {
+                                       @Override
+                                       public void setPinCode(String pin)
+                                       {
+                                           for(int i = 0; i < mGattCharacteristics.size(); i ++)
+                                           {
+                                               final ArrayList characteristicData = mGattCharacteristics.get(i);
+                                               for(int j = 0; j < characteristicData.size(); j ++)
+                                               {
+                                                   BluetoothGattCharacteristic characteristic = mGattCharacteristics.get(i).get(j);
+                                                   if( characteristic.getUuid().toString().equals(SampleGattAttributes.WRITE_CHARACTERISTICS))
+                                                   {
+                                                       mBluetoothLeService.writeCharacteristic(characteristic, "PIN_CHECK", pin);
+                                                   }
+                                               }
+                                           }
+                                       }});
                 }
                 else if (extraData.equals("approved"))
                 {
                     Log.e(TAG,"Let user in");
                 }
+                else if ( extraDataParsed[0].equals("PINVERfalse") )
+                {
+                    Toast.makeText( context , "Sorry! Wrong PIN code.", Toast.LENGTH_SHORT).show();
+                    mBluetoothLeService.disconnect();
+                }
+
 
                 displayData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
             }
         }
     };
 
-    private int requestPinCode()
+    private void requestPinCode(final alertDialogResponse alertDialogResponse)
     {
-        //final EditText input = new EditText(this);
-        //input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_TEXT_VARIATION_PASSWORD );
-
-
-
-        final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+         final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
 
         LayoutInflater mLayoutInflater = this.getLayoutInflater();
         View pinEntryTextView = mLayoutInflater.inflate(R.layout.pin_alert, null);
@@ -147,20 +162,25 @@ public class DeviceControlActivity extends Activity {
         alertDialog.setTitle("Please provide PIN to enter.");
         alertDialog.setMessage("PIN");
 
-        final PinEntryEditText txtPinEntry =(PinEntryEditText) pinEntryTextView.findViewById(R.id.txt_pin_entry);
+        final PinEntryEditText txtPinEntry = (PinEntryEditText) pinEntryTextView.findViewById(R.id.txt_pin_entry);
         alertDialog.setView(pinEntryTextView);
 
         alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "ENTER", new DialogInterface.OnClickListener()
         {
             public void onClick(DialogInterface dialog, int which)
             {
-                Log.e("TAG", "TXT PIN ENTRY " + txtPinEntry.getPinCode());
+                alertDialogResponse.setPinCode(txtPinEntry.getPinCode());
                 dialog.dismiss();
             }
         });
 
         alertDialog.show();
-        return 0;
+//        return 0;
+    }
+
+    interface alertDialogResponse
+    {
+        void setPinCode(String pin);
     }
 
     // If a given GATT characteristic is selected, check for supported features.  This sample
@@ -196,7 +216,7 @@ public class DeviceControlActivity extends Activity {
                 {
                     mNotifyCharacteristic = characteristic;
                     mBluetoothLeService.setCharacteristicNotification( characteristic, true);
-                    mBluetoothLeService.writeCharacteristic(characteristic);
+                    mBluetoothLeService.writeCharacteristic(characteristic, "", "");
                 }
                 return true;
             }
@@ -228,7 +248,6 @@ public class DeviceControlActivity extends Activity {
         getActionBar().setTitle(mDeviceName);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
-        Log.d(TAG, "ON CREATE DEVICE CONTROL ACTIVITY");
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
     }
 
@@ -309,33 +328,29 @@ public class DeviceControlActivity extends Activity {
         String unknownServiceString = getResources().getString(R.string.unknown_service);
         String unknownCharaString = getResources().getString(R.string.unknown_characteristic);
         ArrayList<HashMap<String, String>> gattServiceData = new ArrayList<HashMap<String, String>>();
-        ArrayList<ArrayList<HashMap<String, String>>> gattCharacteristicData
-                = new ArrayList<ArrayList<HashMap<String, String>>>();
+        ArrayList<ArrayList<HashMap<String, String>>> gattCharacteristicData = new ArrayList<ArrayList<HashMap<String, String>>>();
         mGattCharacteristics = new ArrayList<ArrayList<BluetoothGattCharacteristic>>();
 
         // Loops through available GATT Services.
-        for (BluetoothGattService gattService : gattServices) {
+        for (BluetoothGattService gattService : gattServices)
+        {
             HashMap<String, String> currentServiceData = new HashMap<String, String>();
             uuid = gattService.getUuid().toString();
-            currentServiceData.put(
-                    LIST_NAME, SampleGattAttributes.lookup(uuid, unknownServiceString));
+            currentServiceData.put( LIST_NAME, SampleGattAttributes.lookup(uuid, unknownServiceString));
             currentServiceData.put(LIST_UUID, uuid);
             gattServiceData.add(currentServiceData);
 
-            ArrayList<HashMap<String, String>> gattCharacteristicGroupData =
-                    new ArrayList<HashMap<String, String>>();
-            List<BluetoothGattCharacteristic> gattCharacteristics =
-                    gattService.getCharacteristics();
-            ArrayList<BluetoothGattCharacteristic> charas =
-                    new ArrayList<BluetoothGattCharacteristic>();
+            ArrayList<HashMap<String, String>> gattCharacteristicGroupData =new ArrayList<HashMap<String, String>>();
+            List<BluetoothGattCharacteristic> gattCharacteristics = gattService.getCharacteristics();
+            ArrayList<BluetoothGattCharacteristic> charas =  new ArrayList<BluetoothGattCharacteristic>();
 
             // Loops through available Characteristics.
-            for (BluetoothGattCharacteristic gattCharacteristic : gattCharacteristics) {
+            for (BluetoothGattCharacteristic gattCharacteristic : gattCharacteristics)
+            {
                 charas.add(gattCharacteristic);
                 HashMap<String, String> currentCharaData = new HashMap<String, String>();
                 uuid = gattCharacteristic.getUuid().toString();
-                currentCharaData.put(
-                        LIST_NAME, SampleGattAttributes.lookup(uuid, unknownCharaString));
+                currentCharaData.put( LIST_NAME, SampleGattAttributes.lookup(uuid, unknownCharaString));
                 currentCharaData.put(LIST_UUID, uuid);
                 gattCharacteristicGroupData.add(currentCharaData);
             }
