@@ -136,16 +136,15 @@ public class DeviceControlActivity extends Activity {
                                            }
                                        }});
                 }
-                else if (extraData.equals("approved"))
-                {
-                    Log.e(TAG,"Let user in");
-                }
                 else if ( extraDataParsed[0].equals("PINVERfalse") )
                 {
                     Toast.makeText( context , "Sorry! Wrong PIN code.", Toast.LENGTH_SHORT).show();
                     mBluetoothLeService.disconnect();
                 }
-
+                else if ( extraDataParsed[0].equals("PINVERtrue") || extraDataParsed[0].equals("approved"))
+                {
+                    Toast.makeText( context , "Door's unlocked. Welcome home :)", Toast.LENGTH_SHORT).show();
+                }
 
                 displayData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
             }

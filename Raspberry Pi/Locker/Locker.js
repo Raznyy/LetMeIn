@@ -1,23 +1,27 @@
-var LockerName = "RaspberryPi";
-var lockerPIN = "1111";
+// Bcrypt lib for hashing and store data in secure way
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+var salt;
+var hash;
+
+var lockerName; 
 
 module.exports = class Locker
 {
     constructor(name, pin)
     {
-        this.LockerName = name;
-        this.lockerPIN = pin;
+        this.salt = bcrypt.genSaltSync(this.saltRounds);
+        this.hash = bcrypt.hashSync(pin, this.salt);  
+        this.lockerName = name;
     }
 
-    checkPIN( pin )
+    getLockerName()
     {
-        if ( this.lockerPIN == pin )
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return this.lockerName;
+    }
+
+    getLockerHash()
+    {
+        return this.hash;
     }
 }

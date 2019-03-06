@@ -1,3 +1,4 @@
+//Import file handling library
 var fs = require('fs');
 var userFilename = 'users.txt';
 
@@ -21,8 +22,11 @@ module.exports = class User
                 console.log(err);
             }
             console.log("The file was saved!");
+            
         });
-      } else {
+      } 
+      else 
+      {
         console.log("The file exists!");
       }
     });

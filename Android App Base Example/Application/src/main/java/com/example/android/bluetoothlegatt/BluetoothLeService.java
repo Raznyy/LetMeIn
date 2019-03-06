@@ -306,20 +306,12 @@ public class BluetoothLeService extends Service {
      */
     public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic, boolean enabled)
     {
-        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+        if (mBluetoothAdapter == null || mBluetoothGatt == null)
+        {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
         mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
-
-        // This is specific to Heart Rate Measurement.
-//        if (USER_CHECK_UUID.equals(characteristic.getUuid()))
-//        {
-//            BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
-//                    UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
-//            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-//            mBluetoothGatt.writeDescriptor(descriptor);
-//        }
     }
 
 
@@ -336,25 +328,6 @@ public class BluetoothLeService extends Service {
         {
             return false;
         }
-
-
-//        try
-//        {
-//            Thread.sleep(200);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-
-//        boolean valueSucces2 = characteristic.setValue("V:" + value);
-//        Log.e(TAG, " writeCharacteristic2  " + valueSucces2 );
-//        if(valueSucces)
-//        {
-//            mBluetoothGatt.writeCharacteristic(characteristic);
-//        }
-//        else
-//        {
-//            return false;
-//        }
         return true;
     }
 

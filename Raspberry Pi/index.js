@@ -1,6 +1,18 @@
 //Importing bleno - Bluetooth server side control library
 var bleno = require('bleno');
 
+// Bcrypt lib for hashing and store data in secure way
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+var salt,hash;
+
+// readline-sync for reading the input in console to set PIN code from user
+var readline = require('readline-sync');
+
+// Reading system files 
+var fs = require('fs');
+var userFilename = 'users.txt';
+
 //GPIO
 var Gpio = require('onoff').Gpio; //include onoff to interact with the GPIO
 var LED = new Gpio(4, 'out'); //use GPIO pin 4, and specify that it is output
@@ -8,15 +20,68 @@ var LED = new Gpio(4, 'out'); //use GPIO pin 4, and specify that it is output
 
 // Include User's functionality
 var userClass = require('./User/User');
-var user;
+var user = new userClass();
 
 //Locker init
 var lockerObject = require('./Locker/Locker.js');
-var locker = new lockerObject("RaspberryPi", "2222");
+var locker;
+var verification = false;
+var lockerInit = onCreate();
 
 function onCreate()
 {
-    
+    checkLockerExist();
+}
+
+function checkLockerExist()
+{
+    try {
+        fs.exists(__dirname+"/User/"+userFilename, function(exists)
+        {
+            if(exists) 
+            {
+                console.log("Istnieje");
+            }
+            else
+            {
+                initLocker();
+            }
+        });
+    } 
+    catch(err)
+    {   
+        console.log("ERROR looking for file");
+    }
+}
+
+function initLocker()
+{
+    user.usersCheck();
+    var deviceName = readline.question("Set locker name:");
+    var lockerPIN = readline.question("Set locker PIN code:");
+    this.locker = new lockerObject(deviceName, lockerPIN);
+
+    console.log("Locker setup finished!");
+}
+
+function getLockerName()
+{
+    return this.locker.getLockerName();
+}
+
+function getLockerHash()
+{
+    return this.locker.getLockerHash();
+}
+
+function setVerification(verStatus)
+{
+    this.verification = verStatus;
+}
+
+function getVerification()
+{
+    return this.verification;
 }
 
 function blinkLED() 
@@ -39,12 +104,10 @@ function endBlink()
 // Once bleno starts, begin advertising our BLE address
 bleno.on('stateChange', function(state) 
 {
-    user = new userClass("");
     console.log('State change: ' + state);
     if (state === 'poweredOn') 
     {
-        bleno.startAdvertising('RaspberryPi',['12ab']);
-        user.usersCheck();
+        bleno.startAdvertising(getLockerName(), ['12ab']);
     } else if(state === 'unauthorized')
     {
       console.log("unauthorized");
@@ -123,14 +186,8 @@ bleno.on('advertisingStart', function(error)
 
                         // Send a message back to the client with the characteristic's value
                         onReadRequest : function(offset, callback) 
-                        {
-                            console.log("------------------");
-                            console.log(user.userLoginStatus);
-                            console.log("------------------");
-                            //callback(this.RESULT_SUCCESS, new Buffer("Echo: " + (this.value ? this.value.toString("utf-8") : "xd")));
-                            
-                            // TO DO: Respond with all data 
-                            callback(this.RESULT_SUCCESS, new Buffer("PINVER" + this.value.toString("utf-8")));
+                        {                            
+                            callback(this.RESULT_SUCCESS, new Buffer("PINVER" + getVerification().toString("utf-8")));
                         },
 
                         // Accept a new value for the characterstic's value
@@ -144,17 +201,22 @@ bleno.on('advertisingStart', function(error)
                                 // var blinkInterval = setInterval(blinkLED, 1000);
                             }
                             else if( dataStringParsed[1] == "PIN_CHECK" )
-                            {
-                                var PINValidation = locker.checkPIN(dataStringParsed[3]);
-                                if(PINValidation)
+                            { 
+                                bcrypt.compare(dataStringParsed[3], getLockerHash() , function(err, res) 
                                 {
-                                    this.value = true;
-                                }
-                                else
-                                {
-                                    this.value = false;
-                                }
-                                callback(this.RESULT_SUCCESS);
+                                    var PINValidation = res;
+                                    console.log("PINValidation " + PINValidation);
+                                    if(PINValidation)
+                                    {
+                                        setVerification(true);
+                                        //user.addUser();
+                                    }
+                                    else
+                                    {
+                                        setVerification(false);
+                                    }
+                                    callback(this.RESULT_SUCCESS);
+                                });  
                             }
                         }                        
                     }),
