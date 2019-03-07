@@ -15,6 +15,11 @@ module.exports = class Locker
         this.lockerName = name;
     }
 
+    setLockerHash()
+    {
+        this.hash = hash;
+    }
+
     getLockerName()
     {
         return this.lockerName;

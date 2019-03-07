@@ -21,13 +21,13 @@ module.exports = class User
             if(err) {
                 console.log(err);
             }
-            console.log("The file was saved!");
+            console.log("The User file was saved!");
             
         });
       } 
       else 
       {
-        console.log("The file exists!");
+        console.log("The User file exists!");
       }
     });
   }
@@ -54,7 +54,7 @@ module.exports = class User
   addUser()
   {
     fs.appendFileSync(__dirname+"/"+userFilename, this.userUUIDAdress + ",");
-    console.log("dodalem " + this.userUUIDAdress);
+    console.log("User  " + this.userUUIDAdress + " added");
   }
   
   checkUserLoginStatus()

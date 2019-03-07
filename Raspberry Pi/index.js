@@ -12,6 +12,7 @@ var readline = require('readline-sync');
 // Reading system files 
 var fs = require('fs');
 var userFilename = 'users.txt';
+var hashFilename = 'hash.txt';
 
 //GPIO
 var Gpio = require('onoff').Gpio; //include onoff to interact with the GPIO
@@ -38,14 +39,7 @@ function checkLockerExist()
     try {
         fs.exists(__dirname+"/User/"+userFilename, function(exists)
         {
-            if(exists) 
-            {
-                console.log("Istnieje");
-            }
-            else
-            {
-                initLocker();
-            }
+            initLocker();
         });
     } 
     catch(err)
@@ -59,9 +53,36 @@ function initLocker()
     user.usersCheck();
     var deviceName = readline.question("Set locker name:");
     var lockerPIN = readline.question("Set locker PIN code:");
-    this.locker = new lockerObject(deviceName, lockerPIN);
+    this.locker = new lockerObject(deviceName, lockerPIN,);
+
+    createhashFile();
 
     console.log("Locker setup finished!");
+}
+
+function createhashFile()
+{
+    try {
+        fs.open(__dirname+"/Locker/"+hashFilename,'r',function(err, fd){
+            if (err) {
+                fs.writeFile(__dirname+"/Locker/"+hashFilename, getLockerHash(), function(err) 
+                {
+                    if(err) {
+                        console.log(err);
+                    }
+                    console.log("The hash file was saved!");
+                });
+            } 
+            else 
+            {
+                console.log("The hash file exists!");
+            }
+        });
+    }
+    catch(err)
+    {
+        console.log("Error reading Hash file!");
+    }
 }
 
 function getLockerName()
@@ -84,21 +105,17 @@ function getVerification()
     return this.verification;
 }
 
-function blinkLED() 
-{ //function to start blinking
-  if (LED.readSync() === 0) { //check the pin state, if the state is 0 (or off)
-    LED.writeSync(1); //set pin state to 1 (turn LED on)
-  } else {
-    LED.writeSync(0); //set pin state to 0 (turn LED off)
-  }
-  console.log("BLINK!");
+function open() 
+{  
+    LED.writeSync(1);
+    console.log("Doors open for 5 seconds");
 }
 
-function endBlink() 
-{ //function to stop blinking
-  clearInterval(blinkInterval); // Stop blink intervals
-  LED.writeSync(0); // Turn LED off
+function close() 
+{
+  LED.writeSync(0); // Turn Voltage off
   LED.unexport(); // Unexport GPIO to free resources
+  console.log("Doors closed");
 }
 
 // Once bleno starts, begin advertising our BLE address
@@ -173,6 +190,11 @@ bleno.on('advertisingStart', function(error)
                             
                             console.log("------------------");
                             console.log(user.userLoginStatus);
+                            if(user.verifyUser())
+                            {
+                                open();
+                                setTimeout(close, 5000);
+                            }
 
                             callback(this.RESULT_SUCCESS, new Buffer(user.userLoginStatus.toString("utf-8")));
                         }
@@ -184,13 +206,13 @@ bleno.on('advertisingStart', function(error)
                         value : false,
                         properties : [ 'read', 'write' ],
 
-                        // Send a message back to the client with the characteristic's value
+                        // Reading finVerification value
                         onReadRequest : function(offset, callback) 
                         {                            
                             callback(this.RESULT_SUCCESS, new Buffer("PINVER" + getVerification().toString("utf-8")));
                         },
 
-                        // Accept a new value for the characterstic's value
+                        // Parsing data writen by user
                         onWriteRequest : function(data, offset, withoutResponse, callback)
                         {
                             dataStringParsed = data.toString('utf-8').split(":");
@@ -198,7 +220,11 @@ bleno.on('advertisingStart', function(error)
                             if( dataStringParsed[1] == "USER_CHECK" ) 
                             {
                                 console.log( " Verify User : " + user.verifyUser());
-                                // var blinkInterval = setInterval(blinkLED, 1000);
+                                if(user.verifyUser())
+                                {
+                                    open();
+                                    setTimeout(close, 5000);
+                                }
                             }
                             else if( dataStringParsed[1] == "PIN_CHECK" )
                             { 
@@ -209,7 +235,9 @@ bleno.on('advertisingStart', function(error)
                                     if(PINValidation)
                                     {
                                         setVerification(true);
-                                        //user.addUser();
+                                        user.addUser();
+                                        open();
+                                        setTimeout(close, 5000);
                                     }
                                     else
                                     {
