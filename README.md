@@ -31,4 +31,4 @@ Instrukcja instalacji serwera:
     d) Obsługa plików systemowych :
         npm i fs
 
-<!-- ![alt text](https://raw.githubusercontent.com/username/projectname/branch/path/to/img.png) -->
+![alt text](https://github.com/Raznyy/LetMeIn/blob/master/ReadmeImages/bluetooth.png)
