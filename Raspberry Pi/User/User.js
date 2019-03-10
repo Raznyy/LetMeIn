@@ -5,13 +5,14 @@ var userFilename = 'users.txt';
 var userUUIDAdress;
 var userLoginStatus;
 
+// User Class for new connected devices
 module.exports = class User
 {
 
   setUUIDAdress(userUUIDAdress)
   {
     this.userUUIDAdress = userUUIDAdress;
-    console.log("New user appear");
+    console.log("New user appear.");
   }
 
   usersCheck() {

@@ -16,10 +16,6 @@ public class SampleGattAttributes {
     public static String PIN_CHECK = "c0d86de0-f0e1-4935-af1a-daff2b3911d8";
 
     static {
-        // Sample Services.
-        //attributes.put("0000180d-0000-1000-8000-00805f9b34fb", "Heart Rate Service");
-        //attributes.put("0000180a-0000-1000-8000-00805f9b34fb", "Device Information Service");
-        // Sample Characteristics.
         attributes.put(ACTION_USER_CHECK_SERVICE, ACTION_READ_CHARACTERISTIC_CONFIG);
         attributes.put(ACTION_USER_CHECK_SERVICE, WRITE_CHARACTERISTICS);
         attributes.put(ACTION_USER_CHECK_SERVICE, PIN_CHECK);

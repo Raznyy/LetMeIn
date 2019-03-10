@@ -631,6 +631,7 @@ drawable abc_textfield_search_activated_mtrl_alpha
 drawable abc_textfield_search_default_mtrl_alpha
 drawable abc_textfield_search_material
 drawable abc_vector_test
+drawable bluetooth
 drawable ic_launcher
 drawable lock
 drawable notification_action_background
@@ -691,6 +692,8 @@ id chains
 id checkbox
 id chronometer
 id collapseActionView
+id connectionLayout
+id connectionStatus
 id connection_state
 id contentPanel
 id custom
@@ -718,7 +721,6 @@ id icon
 id icon_group
 id ifRoom
 id image
-id imageView
 id info
 id invisible
 id italic
@@ -752,7 +754,6 @@ id radio
 id right
 id right_icon
 id right_side
-id scan_wrapper
 id screen
 id scrollIndicatorDown
 id scrollIndicatorUp
@@ -782,7 +783,6 @@ id src_over
 id standard
 id start
 id status_bar_latest_event_content
-id status_textView
 id submenuarrow
 id submit_area
 id tabMode
@@ -799,6 +799,7 @@ id top
 id topPanel
 id txt_pin_entry
 id uniform
+id unlockButton
 id up
 id useLogo
 id withText
@@ -836,8 +837,6 @@ layout abc_search_dropdown_item_icons_2line
 layout abc_search_view
 layout abc_select_dialog_material
 layout actionbar_indeterminate_progress
-layout activity_main
-layout device_scan_layout
 layout gatt_services_characteristics
 layout listitem_device
 layout notification_action

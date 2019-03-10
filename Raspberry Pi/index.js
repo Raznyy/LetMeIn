@@ -48,6 +48,7 @@ function checkLockerExist()
     }
 }
 
+// Inicializing Locker with entered Name and Pin code
 function initLocker()
 {
     user.usersCheck();
@@ -55,6 +56,7 @@ function initLocker()
     var lockerPIN = readline.question("Set locker PIN code:");
     this.locker = new lockerObject(deviceName, lockerPIN,);
 
+    //saving hash file to decode pin 
     createhashFile();
 
     console.log("Locker setup finished!");
@@ -105,6 +107,7 @@ function getVerification()
     return this.verification;
 }
 
+/* GPIO FUNTIONS  */ 
 function open() 
 {  
     LED.writeSync(1);
@@ -117,6 +120,8 @@ function close()
   LED.unexport(); // Unexport GPIO to free resources
   console.log("Doors closed");
 }
+
+/* -------------- */ 
 
 // Once bleno starts, begin advertising our BLE address
 bleno.on('stateChange', function(state) 
@@ -142,15 +147,14 @@ bleno.on('accept', function(clientAddress)
     
     user.setUUIDAdress(clientAddress);
 
-    // TO DO : Implement User class
+
     if(user.verifyUser())
     {
-      console.log("Jesteś!");
+      console.log("User already paired.");
     }
     else
     {
-      console.log("Nie ma Cię!");
-      //user.addUser();
+      console.log("User not detected in paired devices base.");
     }
 });
 
@@ -171,14 +175,11 @@ bleno.on('advertisingStart', function(error)
     {
         bleno.setServices([
             
-            // Define a new service
+            // Service for autocheck User on connection init
             new bleno.PrimaryService({
                 uuid : '0000ffe9-0000-1000-8000-00805f9b34fb',
                 characteristics : [
-                    
-                    // Define a new characteristic within that service
-                    
-                    new bleno.Characteristic({
+                        new bleno.Characteristic({
                         value : null,
                         uuid : '00002902-0000-1000-8000-00805f9b34fb',
                         properties : ['read'],
@@ -186,27 +187,28 @@ bleno.on('advertisingStart', function(error)
                         // Send a message back to the client with the characteristic's value
                         onReadRequest : function(offset, callback) 
                         {
-                            console.log("Read request received");
-                            
-                            console.log("------------------");
-                            console.log(user.userLoginStatus);
+                                                    
+                            console.log("Checking user access....");
+                            console.log("User acces status : " + user.userLoginStatus);
+
+                            // If user's already paired, open GPIO 
                             if(user.verifyUser())
                             {
                                 open();
-                                setTimeout(close, 5000);
+                                setTimeout(close, 10000);
                             }
 
                             callback(this.RESULT_SUCCESS, new Buffer(user.userLoginStatus.toString("utf-8")));
                         }
                     }),
 
-                    // Define a new characteristic within that service
+                    // Service for new users ( acces with PIN code entered )
                     new bleno.Characteristic({
                         uuid : 'a922bc74-81dc-444a-8f5f-fbe1a4ec685c',
                         value : false,
                         properties : [ 'read', 'write' ],
 
-                        // Reading finVerification value
+                        // Reading pinVerification value
                         onReadRequest : function(offset, callback) 
                         {                            
                             callback(this.RESULT_SUCCESS, new Buffer("PINVER" + getVerification().toString("utf-8")));
@@ -215,7 +217,10 @@ bleno.on('advertisingStart', function(error)
                         // Parsing data writen by user
                         onWriteRequest : function(data, offset, withoutResponse, callback)
                         {
+                            // Recognize action passed by user
                             dataStringParsed = data.toString('utf-8').split(":");
+
+                            console.log("Data string parsed " +  dataStringParsed[1]);
                             
                             if( dataStringParsed[1] == "USER_CHECK" ) 
                             {
@@ -223,15 +228,16 @@ bleno.on('advertisingStart', function(error)
                                 if(user.verifyUser())
                                 {
                                     open();
-                                    setTimeout(close, 5000);
+                                    setTimeout(close, 10000);
                                 }
                             }
                             else if( dataStringParsed[1] == "PIN_CHECK" )
                             { 
+                                // bcrypt - checking hased pin with the one from USer 
                                 bcrypt.compare(dataStringParsed[3], getLockerHash() , function(err, res) 
                                 {
                                     var PINValidation = res;
-                                    console.log("PINValidation " + PINValidation);
+                                    console.log("PIN validation :  " + PINValidation);
                                     if(PINValidation)
                                     {
                                         setVerification(true);

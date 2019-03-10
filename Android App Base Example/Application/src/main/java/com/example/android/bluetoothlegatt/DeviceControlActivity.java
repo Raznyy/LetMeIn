@@ -12,18 +12,26 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.os.IBinder;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
+import android.widget.LinearLayout;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,6 +54,9 @@ public class DeviceControlActivity extends Activity {
 
     private TextView mConnectionState;
     private TextView mDataField;
+    private TextView mconnectionStatus;
+    private Button mConnectionButton;
+    private LinearLayout mConnectionLayout;
     private String mDeviceName;
     private String mDeviceAddress;
     private ExpandableListView mGattServicesList;
@@ -106,7 +117,6 @@ public class DeviceControlActivity extends Activity {
             else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action))
             {
                 // Show all the supported services and characteristics on the user interface.
-                Log.e(TAG, "XXXXXXXXXXX ACTION_GATT_SERVICES_DISCOVERED ! XXXXXXXXXXXXXX");
                 displayGattServices(mBluetoothLeService.getSupportedGattServices());
             }
             else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action))
@@ -118,6 +128,7 @@ public class DeviceControlActivity extends Activity {
                 Log.e(TAG, extraDataParsed[0]);
                 if(extraDataParsed[0].equals("declined"))
                 {
+                    mconnectionStatus.setText("User not provided. Please enter PIN code to connect.");
                     requestPinCode(new alertDialogResponse() {
                                        @Override
                                        public void setPinCode(String pin)
@@ -139,11 +150,44 @@ public class DeviceControlActivity extends Activity {
                 else if ( extraDataParsed[0].equals("PINVERfalse") )
                 {
                     Toast.makeText( context , "Sorry! Wrong PIN code.", Toast.LENGTH_SHORT).show();
+                    ColorDrawable[] color = {new ColorDrawable(0xFDC01299), new ColorDrawable(Color.RED)};
+                    TransitionDrawable trans = new TransitionDrawable(color);
+                    mConnectionLayout.setBackground(trans);
+                    trans.startTransition(500);
                     mBluetoothLeService.disconnect();
+                    mconnectionStatus.setText("Wrong PIN code.");
+                    mConnectionButton.setText("Reconnect.");
+                    mConnectionButton.setEnabled(true);
                 }
                 else if ( extraDataParsed[0].equals("PINVERtrue") || extraDataParsed[0].equals("approved"))
                 {
-                    Toast.makeText( context , "Door's unlocked. Welcome home :)", Toast.LENGTH_SHORT).show();
+                    ColorDrawable[] color = {new ColorDrawable(0xFDC01299), new ColorDrawable(Color.GREEN)};
+                    TransitionDrawable trans = new TransitionDrawable(color);
+                    mConnectionLayout.setBackground(trans);
+                    trans.startTransition(500);
+                    mconnectionStatus.setText(" Welcome home :) Door's unlocked for 10 second.");
+                    mConnectionButton.setEnabled(false);
+                    new CountDownTimer(10000, 1000) {
+
+                        public void onTick(long millisUntilFinished) {
+                            mConnectionButton.setText("Open for: " + millisUntilFinished / 1000);
+                        }
+
+                        public void onFinish() {
+                            mConnectionButton.setText("Doors closed!");
+                            mBluetoothLeService.disconnect();
+                            final Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run()
+                                {
+                                    mConnectionButton.setEnabled(true);
+                                    mConnectionButton.setText("Reopen the door.");
+                                }
+                            }, 1000);
+                        }
+
+                    }.start();
                 }
 
                 displayData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
@@ -159,22 +203,38 @@ public class DeviceControlActivity extends Activity {
         View pinEntryTextView = mLayoutInflater.inflate(R.layout.pin_alert, null);
 
         alertDialog.setTitle("Please provide PIN to enter.");
-        alertDialog.setMessage("PIN");
 
         final PinEntryEditText txtPinEntry = (PinEntryEditText) pinEntryTextView.findViewById(R.id.txt_pin_entry);
         alertDialog.setView(pinEntryTextView);
 
         alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "ENTER", new DialogInterface.OnClickListener()
         {
+            @Override
             public void onClick(DialogInterface dialog, int which)
             {
+                if(txtPinEntry.getPinCode().length()<4)
+                {
+                    Toast.makeText( getApplicationContext() , "Please enter pin code to proceed.", Toast.LENGTH_SHORT).show();
+                }
+                else if( txtPinEntry.getPinCode().length()==4)
+                {
+                    dialog.dismiss();
+                }
                 alertDialogResponse.setPinCode(txtPinEntry.getPinCode());
-                dialog.dismiss();
             }
         });
+
         alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.setCancelable(false);
+        alertDialog.setOnKeyListener(new DialogInterface.OnKeyListener()
+        {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                // Prevent dialog close on back press button
+                return keyCode == KeyEvent.KEYCODE_BACK;
+            }
+        });
         alertDialog.show();
-//      return 0;
     }
 
     interface alertDialogResponse
@@ -244,8 +304,22 @@ public class DeviceControlActivity extends Activity {
         mConnectionState = (TextView) findViewById(R.id.connection_state);
         mDataField = (TextView) findViewById(R.id.data_value);
 
-//        getActionBar().setTitle(mDeviceName);
-//        getActionBar().setDisplayHomeAsUpEnabled(true);
+        mConnectionButton = (Button)findViewById(R.id.unlockButton);
+        mConnectionButton.setEnabled(false);
+        mConnectionLayout = (LinearLayout)findViewById(R.id.connectionLayout);
+        mconnectionStatus = (TextView) findViewById(R.id.connectionStatus);
+
+        mConnectionButton.setOnClickListener(new View.OnClickListener()
+        {
+            public void onClick(View v)
+            {
+                mBluetoothLeService.connect(mDeviceAddress);
+                mConnectionButton.setText("Connecting...");
+            }
+        });
+
+        getActionBar().setTitle("Connected to : " + mDeviceName);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
         Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
     }

@@ -17,13 +17,23 @@
     <item android:id="@+id/menu_refresh"
           android:checkable="false"
           android:orderInCategory="1"
-          android:showAsAction="ifRoom"/>
-    <item android:id="@+id/menu_scan"
-          android:title="@string/menu_scan"
-          android:orderInCategory="100"
-          android:showAsAction="ifRoom|withText"/>
+          android:showAsAction="ifRoom"
+        android:fontFamily="@font/robotobold"
+        android:textSize="20sp"
+        />
     <item android:id="@+id/menu_stop"
           android:title="@string/menu_stop"
           android:orderInCategory="101"
-          android:showAsAction="ifRoom|withText"/>
+          android:showAsAction="ifRoom|withText"
+        android:fontFamily="@font/robotobold"
+        android:textSize="20sp"
+        />
+    <item
+        android:id="@+id/menu_scan"
+        android:orderInCategory="100"
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/menu_scan"
+        android:fontFamily="@font/robotobold"
+        android:textSize="20sp"
+        />
 </menu>

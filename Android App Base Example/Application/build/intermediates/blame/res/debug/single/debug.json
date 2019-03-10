@@ -528,6 +528,10 @@
         "source": "C:\\Users\\Raznyy\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.0.2.aar\\3ff8dd645f7205be55880f1000f50db8\\res\\drawable-xxxhdpi-v4\\abc_tab_indicator_mtrl_alpha.9.png"
     },
     {
+        "merged": "E:\\Praca_inzynierska\\Projekt\\LetMeIn\\Android App Base Example\\Application\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi_bluetooth.png.flat",
+        "source": "E:\\Praca_inzynierska\\Projekt\\LetMeIn\\Android App Base Example\\Application\\src\\main\\res\\drawable-hdpi\\bluetooth.png"
+    },
+    {
         "merged": "E:\\Praca_inzynierska\\Projekt\\LetMeIn\\Android App Base Example\\Application\\build\\intermediates\\res\\merged\\debug\\layout_abc_popup_menu_item_layout.xml.flat",
         "source": "C:\\Users\\Raznyy\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.0.2.aar\\3ff8dd645f7205be55880f1000f50db8\\res\\layout\\abc_popup_menu_item_layout.xml"
     },
@@ -570,10 +574,6 @@
     {
         "merged": "E:\\Praca_inzynierska\\Projekt\\LetMeIn\\Android App Base Example\\Application\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4_abc_scrubber_control_to_pressed_mtrl_000.png.flat",
         "source": "C:\\Users\\Raznyy\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.0.2.aar\\3ff8dd645f7205be55880f1000f50db8\\res\\drawable-mdpi-v4\\abc_scrubber_control_to_pressed_mtrl_000.png"
-    },
-    {
-        "merged": "E:\\Praca_inzynierska\\Projekt\\LetMeIn\\Android App Base Example\\Application\\build\\intermediates\\res\\merged\\debug\\layout_activity_main.xml.flat",
-        "source": "E:\\Praca_inzynierska\\Projekt\\LetMeIn\\Android App Base Example\\Application\\src\\main\\res\\layout\\activity_main.xml"
     },
     {
         "merged": "E:\\Praca_inzynierska\\Projekt\\LetMeIn\\Android App Base Example\\Application\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi-v4_abc_tab_indicator_mtrl_alpha.9.png.flat",
@@ -1066,10 +1066,6 @@
     {
         "merged": "E:\\Praca_inzynierska\\Projekt\\LetMeIn\\Android App Base Example\\Application\\build\\intermediates\\res\\merged\\debug\\layout_abc_screen_content_include.xml.flat",
         "source": "C:\\Users\\Raznyy\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.0.2.aar\\3ff8dd645f7205be55880f1000f50db8\\res\\layout\\abc_screen_content_include.xml"
-    },
-    {
-        "merged": "E:\\Praca_inzynierska\\Projekt\\LetMeIn\\Android App Base Example\\Application\\build\\intermediates\\res\\merged\\debug\\layout_device_scan_layout.xml.flat",
-        "source": "E:\\Praca_inzynierska\\Projekt\\LetMeIn\\Android App Base Example\\Application\\src\\main\\res\\layout\\device_scan_layout.xml"
     },
     {
         "merged": "E:\\Praca_inzynierska\\Projekt\\LetMeIn\\Android App Base Example\\Application\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi-v4_abc_spinner_mtrl_am_alpha.9.png.flat",

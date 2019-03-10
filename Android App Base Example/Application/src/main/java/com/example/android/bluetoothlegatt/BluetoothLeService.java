@@ -85,7 +85,9 @@ public class BluetoothLeService extends Service {
         }
 
         @Override
-        public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+        public void onServicesDiscovered(BluetoothGatt gatt, int status)
+        {
+            Log.e(TAG, "SERVICEES DISCOVERED " );
             if (status == BluetoothGatt.GATT_SUCCESS)
             {
                 for (BluetoothGattService gattService : gatt.getServices())

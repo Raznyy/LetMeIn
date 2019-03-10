@@ -9,9 +9,10 @@
         android:layout_height="wrap_content"
         android:cursorVisible="false"
         android:digits="1234567890"
+        android:fontFamily="@font/robotobold"
         android:inputType="number"
         android:maxLength="4"
         android:textIsSelectable="true"
-        android:textSize="20sp" />
+        android:textSize="24sp" />
 
 </LinearLayout>
