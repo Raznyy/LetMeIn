@@ -52,8 +52,29 @@ function checkLockerExist()
 function initLocker()
 {
     user.usersCheck();
+    var validateCode = false;
     var deviceName = readline.question("Set locker name:");
     var lockerPIN = readline.question("Set locker PIN code:");
+    while(lockerPIN.length!=4)
+    {
+        console.log("Please enter 4 digits code");
+        lockerPIN = readline.question("Set locker PIN code:");
+        
+    }
+    while(!validateCode)
+    {
+        if(lockerPIN.match(/^-{0,1}\d+$/))
+        {
+            console.log("Code provided.");
+            validateCode = true;
+        }
+        else
+        {  
+            console.log("Only number accepted.");
+            validateCode = false;
+            lockerPIN = readline.question("Set locker PIN code:");
+        }
+    }
     this.locker = new lockerObject(deviceName, lockerPIN,);
 
     //saving hash file to decode pin 
