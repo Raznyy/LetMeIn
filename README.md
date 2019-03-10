@@ -31,4 +31,9 @@ Instrukcja instalacji serwera:
     d) Obsługa plików systemowych :
         npm i fs
 
-![alt text](https://github.com/Raznyy/LetMeIn/blob/master/ReadmeImages/bluetooth.png)
+Android App interface:
+![alt text](https://github.com/Raznyy/LetMeIn/blob/master/ReadmeImages/androidApp.png)
+
+
+RaspberryPi interface:
+![alt text](https://github.com/Raznyy/LetMeIn/blob/master/ReadmeImages/SerwerApp.png)
